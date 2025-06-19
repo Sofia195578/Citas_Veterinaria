@@ -326,6 +326,7 @@
                 if (!formCita.checkValidity()) {
                     formCita.classList.add('was-validated');
                     valido = false;
+                    return;
                 }
 
                 // Obtener valores del formulario
