@@ -321,11 +321,12 @@
 
             function guardarCita() {
 
+                let valido = true; 
+
                 if (!formCita.checkValidity()) {
                     formCita.classList.add('was-validated');
                     valido = false;
                 }
-
 
                 // Obtener valores del formulario
                 const id = parseInt(document.getElementById('citaId').value) || proximoId++;
