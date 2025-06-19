@@ -4,12 +4,16 @@
 body {
     box-sizing: border-box;
     background: #FFE6E9;
+    background-image: url(./fondo.jpg);
+    background-size: cover;
+    background-blend-mode: lighten;
 }
 
 h1 {
     text-align: center;
     font-family: "Ribeye", serif;
     color: pink;
+    margin-top: 20px;
 }
 
 .botones {
