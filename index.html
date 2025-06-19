@@ -290,35 +290,42 @@
                 });
             }
 
+               // Asegurarnos de que la fecha se interprete en hora local
             function formatearFecha(fechaStr) {
-                const fecha = new Date(fechaStr);
+                const [año, mes, dia] = fechaStr.split('-');
+                const fecha = new Date(año, mes - 1, dia);
 
                 if (isNaN(fecha.getTime())) {
                     return "Fecha inválida";
                 }
 
-                const dia = fecha.getDate();
-                const mes = fecha.getMonth();
-                const año = fecha.getFullYear();
+                const diaLocal = fecha.getDate();
+                const mesLocal = fecha.getMonth();
+                const añoLocal = fecha.getFullYear();
 
                 const meses = [
                     "enero", "febrero", "marzo", "abril", "mayo", "junio",
                     "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
                 ];
 
-                return `${dia} de ${meses[mes]} de ${año}`;
-
-
+                return `${diaLocal} de ${meses[mesLocal]} de ${añoLocal}`;
             }
+
+            //Evita la eleccion de fechas pasadas
+            const hoy = new Date();
+            hoy.setDate(hoy.getDate() + 1); 
+            const mañana = hoy.toISOString().split('T')[0];
+            document.getElementById('fecha').min = mañana;
 
 
 
             function guardarCita() {
-                // Validar el formulario
+
                 if (!formCita.checkValidity()) {
                     formCita.classList.add('was-validated');
-                    return;
+                    valido = false;
                 }
+
 
                 // Obtener valores del formulario
                 const id = parseInt(document.getElementById('citaId').value) || proximoId++;
@@ -330,30 +337,7 @@
                 const tipoMascota = document.getElementById('tipoMascota').value;
                 const sintomas = document.getElementById('sintomas').value;
                 const estado = document.getElementById('estado').value;
-
-                // Validación adicional del teléfono (solo números)
-
-                if (isNaN(telefono)) {
-                    document.getElementById('telefono').classList.add('is-invalid');
-                    return;
-                }
-
-                // Validación adicional de la fecha (futura)
-                const fechaInput = document.getElementById('fecha');
-                const fecha1 = fechaInput.value;
-                const fechaCita = new Date(fecha1);
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
-                fechaCita.setUTCHours(0, 0, 0, 0);
-
-                if (isNaN(fechaCita.getTime()) || fechaCita < hoy) {
-                    fechaInput.classList.add('is-invalid');
-                    return;
-                } else {
-                    fechaInput.classList.remove('is-invalid');
-                }
-
-
+                
                 // Crear o actualizar la cita
                 const index = citas.findIndex(c => c.id === id);
                 const nuevaCita = {
@@ -372,8 +356,14 @@
                 // Cerrar modal y resetear formulario
                 const modal = bootstrap.Modal.getInstance(document.getElementById('modalCita'));
                 modal.hide();
+
+                // Resetear formulario
                 formCita.reset();
-                formCita.classList.remove('was-validated');
+
+                // Limpiar clases de validación (quitar bordes verdes o rojos)
+                formCita.querySelectorAll('.is-invalid').forEach(input => {
+                    input.classList.remove('is-invalid');
+                });
 
                 // Actualizar la lista de citas
                 renderCitas();
