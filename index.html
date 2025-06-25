@@ -10,32 +10,43 @@
 </head>
 
 <body>
-    <h1>Administrador de citas</h1>
+
 
     <div class="container">
 
         <div class="botones">
-            <div class="col-md-4">
-                <select class="form-select" id="filtroEstado">
-                    <option value="">Todas las citas</option>
-                    <option value="Abierta">Abierta</option>
-                    <option value="Terminada">Terminada</option>
-                    <option value="Anulada">Anulada</option>
-                </select>
-            </div>
+            <h1>🐾Administrador de citas🐾</h1>
 
-            <div class="col-md-4">
-                <input type="text" class="form-control" id="busqueda" placeholder="Buscar mascota o propietario">
-            </div>
+            <div class="botonera">
+                <div class="col-md-4">
+                    <select class="form-select" id="filtroEstado">
+                        <option value="">Todas las citas</option>
+                        <option value="Abierta">Abierta</option>
+                        <option value="Terminada">Terminada</option>
+                        <option value="Anulada">Anulada</option>
+                    </select>
+                </div>
 
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCita">
-                AGREGAR CITA
-            </button>
+                <div class="col-md-4">
+                    <input type="text" class="form-control" id="busqueda" placeholder="Buscar mascota o propietario">
+                </div>
+
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCita">
+                    AGREGAR CITA
+                </button>
+            </div>
         </div>
-        <br>
-        <div class="linea"></div>
 
-        <div id="citasContainer" class="row g-4 mt-3"></div>
+        <div class="row g-4 mt-3 position-relative">
+            <div id="mensajeVacio"
+                class="text-center w-100 text-muted position-absolute top-50 start-50 translate-middle"
+                style="display: none;">
+                <h4 class="fw-bold">No hay citas por ahora🩺</h4>
+                <p class="text-secondary">Usa el botón <strong>"Agregar cita"</strong> para registrar una nueva.</p>
+            </div>
+            <div id="citasContainer" class="row g-4 w-100"></div>
+        </div>
+
 
         <!-- agregar/editar citas -->
         <div class="modal fade" id="modalCita" tabindex="-1" aria-labelledby="modalCitaLabel" aria-hidden="true">
@@ -166,6 +177,7 @@
 
 
             const citasContainer = document.getElementById('citasContainer');
+            const mensajeVacio = document.getElementById('mensajeVacio');
             const formCita = document.getElementById('formCita');
             const btnGuardar = document.getElementById('btnGuardar');
             const btnConfirmarEliminar = document.getElementById('btnConfirmarEliminar');
@@ -215,6 +227,14 @@
 
                 // Limpiar el contenedor
                 citasContainer.innerHTML = '';
+
+                // Mostrar mensaje si no hay resultados
+                if (citasFiltradas.length === 0) {
+                    mensajeVacio.style.display = 'block';
+                    return;
+                } else {
+                    mensajeVacio.style.display = 'none';
+                }
 
                 // Renderizar cada cita
                 citasFiltradas.forEach(cita => {
@@ -290,7 +310,7 @@
                 });
             }
 
-               // Asegurarnos de que la fecha se interprete en hora local
+            // Asegurarnos de que la fecha se interprete en hora local
             function formatearFecha(fechaStr) {
                 const [año, mes, dia] = fechaStr.split('-');
                 const fecha = new Date(año, mes - 1, dia);
@@ -313,7 +333,7 @@
 
             //Evita la eleccion de fechas pasadas
             const hoy = new Date();
-            hoy.setDate(hoy.getDate() + 1); 
+            hoy.setDate(hoy.getDate() + 1);
             const mañana = hoy.toISOString().split('T')[0];
             document.getElementById('fecha').min = mañana;
 
@@ -321,13 +341,14 @@
 
             function guardarCita() {
 
-                let valido = true; 
+                let valido = true
 
                 if (!formCita.checkValidity()) {
                     formCita.classList.add('was-validated');
                     valido = false;
                     return;
                 }
+
 
                 // Obtener valores del formulario
                 const id = parseInt(document.getElementById('citaId').value) || proximoId++;
@@ -339,7 +360,7 @@
                 const tipoMascota = document.getElementById('tipoMascota').value;
                 const sintomas = document.getElementById('sintomas').value;
                 const estado = document.getElementById('estado').value;
-                
+
                 // Crear o actualizar la cita
                 const index = citas.findIndex(c => c.id === id);
                 const nuevaCita = {
